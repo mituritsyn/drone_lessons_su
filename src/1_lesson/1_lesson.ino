@@ -10,4 +10,5 @@ void setup(){
 
 void loop(){
   Serial.println("loop again");
+  delay(1000);
 }
