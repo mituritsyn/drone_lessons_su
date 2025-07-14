@@ -1,5 +1,11 @@
+#include <Arduino.h>
+
 #define LED_BUILTIN 15
 #define BOOT_BUTTON 0
+
+unsigned long prevMillis = 0;
+const uint16_t interval = 500;
+bool ledState = false;
 
 void setup(){
   pinMode(BOOT_BUTTON, INPUT_PULLUP);
@@ -15,8 +21,10 @@ void loop(){
   if (digitalRead(BOOT_BUTTON) == LOW) {
     Serial.println("Boot button pressed!");
   }
-  digitalWrite(LED_BUILTIN, LOW);   // Выключить LED
-  delay(500);
-  digitalWrite(LED_BUILTIN, HIGH);  // Включить LED
-  delay(500);
+  unsigned long currentMillis = millis();
+  if (currentMillis - prevMillis >= interval) {
+    prevMillis = currentMillis;
+    ledState = !ledState;
+    digitalWrite(LED_BUILTIN, ledState);
+  }
 }
