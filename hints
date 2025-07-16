@@ -11,10 +11,10 @@ arduino-cli core install esp32:esp32
 arduino-cli board list
 
 #компиляция прошивки
-arduino-cli compile --fqbn esp32:esp32:esp32s2:CDCOnBoot=cdc,FlashMode=dio 1_lesson
+arduino-cli compile --fqbn esp32:esp32:esp32s2:CDCOnBoot=cdc 1_lesson
 
 # загрузка прошивки на плату
-arduino-cli upload --fqbn esp32:esp32:esp32s2:CDCOnBoot=cdc,FlashMode=dio -p "/dev/serial/by-id/usb-Espressif_ESP32-S2_0-if00" 1_lesson
+arduino-cli upload --fqbn esp32:esp32:esp32s2:CDCOnBoot=cdc -p PORT 1_lesson
 
 # подключение к плате
-arduino-cli monitor -p /dev/ttyACM0
+arduino-cli monitor -p PORT
