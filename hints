@@ -7,6 +7,9 @@ arduino-cli core update-index
 # установка ядра esp32
 arduino-cli core install esp32:esp32
 
+#если установка ядра закончилась ошибкой Timeout
+arduino-cli config set network.connection_timeout 600s
+
 # список подключенных плат
 arduino-cli board list
 
