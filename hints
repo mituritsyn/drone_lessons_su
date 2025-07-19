@@ -17,7 +17,7 @@ arduino-cli board list
 arduino-cli compile --fqbn esp32:esp32:esp32s2:CDCOnBoot=cdc 1_lesson
 
 # загрузка прошивки на плату
-arduino-cli upload --fqbn esp32:esp32:esp32s2:CDCOnBoot=cdc -p PORT 1_lesson
+arduino-cli upload --fqbn esp32:esp32:esp32s2:CDCOnBoot=cdc -p com3 1_lesson
 
 # подключение к плате
-arduino-cli monitor -p PORT
+arduino-cli monitor -p com3
