@@ -12,5 +12,8 @@
         "initializer_list": "cpp",
         "span": "cpp",
         "regex": "cpp"
+    },
+    "workbench.editorAssociations": {
+        "*.md": "vscode.markdown.preview.editor"
     }
 }
