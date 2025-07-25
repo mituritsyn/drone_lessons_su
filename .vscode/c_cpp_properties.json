@@ -1,0 +1,109 @@
+{
+	"configurations": [
+		{
+			"name": "Linux",
+			"includePath": [
+				"${workspaceFolder}/flix",
+				"${workspaceFolder}/gazebo",
+				"~/.arduino15/packages/esp32/hardware/esp32/3.2.1/cores/esp32",
+				"~/.arduino15/packages/esp32/hardware/esp32/3.2.1/libraries/**",
+				"~/.arduino15/packages/esp32/hardware/esp32/3.2.1/variants/esp32s2",
+				"~/.arduino15/packages/esp32/tools/esp32-arduino-libs/idf-release_v5.4-858a988d-v1/esp32/**",
+				"~/.arduino15/packages/esp32/tools/esp32-arduino-libs/idf-release_v5.4-858a988d-v1/esp32/dio_qspi/include",
+				"~/Arduino/libraries/**",
+				"/usr/include/**"
+			],
+			"forcedInclude": [
+				"${workspaceFolder}/.vscode/intellisense.h",
+				"~/.arduino15/packages/esp32/hardware/esp32/3.2.1/cores/esp32/Arduino.h",
+				"~/.arduino15/packages/esp32/hardware/esp32/3.2.1/variants/esp32s2/pins_arduino.h",
+				"${workspaceFolder}/flix/cli.ino",
+			],
+			"compilerPath": "~/.arduino15/packages/esp32/tools/esp-x32/2411/bin/xtensa-esp32-elf-g++",
+			"cStandard": "c11",
+			"cppStandard": "c++17",
+			"defines": [
+				"F_CPU=240000000L",
+				"ARDUINO=10607",
+				"ARDUINO_esp32s2",
+				"ARDUINO_ARCH_ESP32",
+				"ARDUINO_BOARD=esp32s2",
+				"ARDUINO_VARIANT=esp32s2",
+				"ARDUINO_PARTITION_default",
+				"ESP32",
+				"CORE_DEBUG_LEVEL=0",
+				"ARDUINO_USB_CDC_ON_BOOT=cdc"
+			]
+		},
+		{
+			"name": "Mac",
+			"includePath": [
+				"${workspaceFolder}/flix",
+				// "${workspaceFolder}/gazebo",
+				"~/Library/Arduino15/packages/esp32/hardware/esp32/3.2.1/cores/esp32",
+				"~/Library/Arduino15/packages/esp32/hardware/esp32/3.2.1/libraries/**",
+				"~/Library/Arduino15/packages/esp32/hardware/esp32/3.2.1/variants/esp32s2",
+				"~/Library/Arduino15/packages/esp32/tools/esp32-arduino-libs/idf-release_v5.4-858a988d-v1/esp32/include/**",
+				"~/Library/Arduino15/packages/esp32/tools/esp32-arduino-libs/idf-release_v5.4-858a988d-v1/esp32/dio_qspi/include",
+				"~/Documents/Arduino/libraries/**",
+				"/opt/homebrew/include/**"
+			],
+			"forcedInclude": [
+				"${workspaceFolder}/.vscode/intellisense.h",
+				"~/Library/Arduino15/packages/esp32/hardware/esp32/3.2.1/cores/esp32/Arduino.h",
+				"~/Library/Arduino15/packages/esp32/hardware/esp32/3.2.1/variants/esp32s2/pins_arduino.h",
+			],
+			"compilerPath": "~/Library/Arduino15/packages/esp32/tools/esp-x32/2411/bin/xtensa-esp32-elf-g++",
+			"cStandard": "c11",
+			"cppStandard": "c++17",
+			"defines": [
+				"F_CPU=240000000L",
+				"ARDUINO=10607",
+				"ARDUINO_esp32s2",
+				"ARDUINO_ARCH_ESP32",
+				"ARDUINO_BOARD=esp32s2",
+				"ARDUINO_VARIANT=esp32s2",
+				"ARDUINO_PARTITION_default",
+				"ARDUINO_FQBN=esp32:esp32:esp32s2",
+				"ESP32",
+				"CORE_DEBUG_LEVEL=0",
+				"ARDUINO_USB_CDC_ON_BOOT=cdc"
+			]
+		},
+		{
+			"name": "Win32",
+			"includePath": [
+				"${workspaceFolder}/flix",
+				"${workspaceFolder}/gazebo",
+				"~/AppData/Local/Arduino15/packages/esp32/hardware/esp32/3.2.1/cores/esp32",
+				"~/AppData/Local/Arduino15/packages/esp32/hardware/esp32/3.2.1/libraries/**",
+				"~/AppData/Local/Arduino15/packages/esp32/hardware/esp32/3.2.1/variants/esp32s2",
+				"~/AppData/Local/Arduino15/packages/esp32/tools/esp32-arduino-libs/idf-release_v5.4-858a988d-v1/esp32/**",
+				"~/AppData/Local/Arduino15/packages/esp32/tools/esp32-arduino-libs/idf-release_v5.4-858a988d-v1/esp32/dio_qspi/include",
+				"~/Documents/Arduino/libraries/**"
+			],
+			"forcedInclude": [
+				"${workspaceFolder}/.vscode/intellisense.h",
+				"~/AppData/Local/Arduino15/packages/esp32/hardware/esp32/3.2.1/cores/esp32/Arduino.h",
+				"~/AppData/Local/Arduino15/packages/esp32/hardware/esp32/3.2.1/variants/esp32s2/pins_arduino.h",
+			],
+			"compilerPath": "~/AppData/Local/Arduino15/packages/esp32/tools/esp-x32/2411/bin/xtensa-esp32-elf-g++.exe",
+			"cStandard": "c11",
+			"cppStandard": "c++17",
+			"defines": [
+				"F_CPU=240000000L",
+				"ARDUINO=10607",
+				"ARDUINO_esp32s2",
+				"ARDUINO_ARCH_ESP32",
+				"ARDUINO_BOARD=esp32s2",
+				"ARDUINO_VARIANT=esp32s2",
+				"ARDUINO_PARTITION_default",
+				"ARDUINO_FQBN=esp32:esp32:esp32s2",
+				"ESP32",
+				"CORE_DEBUG_LEVEL=0",
+				"ARDUINO_USB_CDC_ON_BOOT=cdc"
+			]
+		}
+	],
+	"version": 4
+}
