@@ -17,7 +17,6 @@
 				"${workspaceFolder}/.vscode/intellisense.h",
 				"~/.arduino15/packages/esp32/hardware/esp32/3.2.1/cores/esp32/Arduino.h",
 				"~/.arduino15/packages/esp32/hardware/esp32/3.2.1/variants/esp32s2/pins_arduino.h",
-				"${workspaceFolder}/flix/cli.ino",
 			],
 			"compilerPath": "~/.arduino15/packages/esp32/tools/esp-x32/2411/bin/xtensa-esp32-elf-g++",
 			"cStandard": "c11",
