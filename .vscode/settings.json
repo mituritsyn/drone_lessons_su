@@ -14,6 +14,20 @@
 	"files.associations": {
 		"*.sdf": "xml",
 		"*.ino": "c",
-		"*.h": "c"
+		"*.h": "c",
+		"ostream": "c",
+		"array": "c",
+		"deque": "c",
+		"list": "c",
+		"string": "c",
+		"unordered_map": "c",
+		"unordered_set": "c",
+		"vector": "c",
+		"string_view": "c",
+		"format": "c",
+		"initializer_list": "c",
+		"span": "c",
+		"text_encoding": "c",
+		"regex": "c"
 	},
 }
