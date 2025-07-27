@@ -1,6 +1,6 @@
 #define LED_PIN 15
 #define BUTTON_PIN 0
-#define X_PIN 1
+#define X_PIN 4
 int x = 0;
 
 void setup() {
@@ -8,6 +8,7 @@ void setup() {
   pinMode(BUTTON_PIN, INPUT_PULLUP);
   Serial.begin(115200);
   pinMode(X_PIN, INPUT);
+  analogReadResolution(8);
 }
 
 void loop() {
@@ -23,4 +24,6 @@ void loop() {
   }
   x = analogRead(X_PIN);  // читаем ось x
   Serial.println(x);
+  analogWrite(LED_PIN, x);
+  delay(100);
 }
