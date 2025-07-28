@@ -5,8 +5,8 @@
 ## Создание объекта Joystick
 ```C
 Joystick_ Joystick(
-    JOYSTICK_DEFAULT_REPORT_ID,
-    JOYSTICK_TYPE_MULTI_AXIS,
+    JOYSTICK_DEFAULT_REPORT_ID, // номер нашего джойстика,
+    JOYSTICK_TYPE_MULTI_AXIS, // сообщаем системе, что это многоосевой джойстик
     4,     // 4 оси
     1,     // 1 кнопка
     true,  // X
@@ -22,11 +22,11 @@ Joystick_ Joystick(
     false  // Steering
 )
 ```
-## Начало 
+## Запуск работы джойстика 
 ```C
 Joystick.begin();
 ```
-## Задаем диапазон значений, передаваемых в джойстик
+## Настраиваем диапазон значений, передаваемых в джойстик
 ```C
 Joystick.setXAxisRange(0, 4095);
 ```
