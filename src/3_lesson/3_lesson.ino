@@ -1,7 +1,11 @@
 #include <Joystick_ESP32S2.h>
 
 #define PIN_GIMBAL_X  1
+#define PIN_GIMBAL_Y  2
 #define LED_BUILTIN 15
+
+int16_t raw_x = 0;
+int16_t raw_y = 0;
 
 Joystick_ Joystick(
     JOYSTICK_DEFAULT_REPORT_ID, 
@@ -29,15 +33,18 @@ void setup() {
     analogReadResolution(12);
 
     pinMode(PIN_GIMBAL_X, INPUT);
+    pinMode(PIN_GIMBAL_Y, INPUT);
 
     pinMode(LED_BUILTIN, OUTPUT);
     digitalWrite(LED_BUILTIN, HIGH);
 }
 
 void loop() {
-    int16_t raw_x  = analogRead(PIN_GIMBAL_X);
+    raw_x  = analogRead(PIN_GIMBAL_X);
+    raw_y  = analogRead(PIN_GIMBAL_Y);
 
     Joystick.setXAxis(raw_x);
+    Joystick.setYAxis(raw_y);
     Serial.print("Состояние оси х: ");
     Serial.println(raw_x);
 

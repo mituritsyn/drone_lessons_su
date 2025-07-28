@@ -20,7 +20,7 @@ Joystick_ Joystick(
     false, // Accelerator
     false, // Brake
     false  // Steering
-)
+);
 ```
 ## Запуск работы джойстика 
 ```C
