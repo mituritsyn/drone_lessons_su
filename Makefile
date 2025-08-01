@@ -3,13 +3,13 @@ PORT := $(wildcard /dev/serial/by-id/usb-Espressif_ESP32-S2_0* /dev/serial/by-id
 PORT := $(strip $(PORT))
 
 build: .dependencies
-	arduino-cli compile --fqbn $(BOARD) src/3_lesson
+	arduino-cli compile --fqbn $(BOARD) src/4_lesson
 
 clean_upload: build
-	arduino-cli upload --fqbn $(BOARD) -p "$(PORT)" src/3_lesson
+	arduino-cli upload --fqbn $(BOARD) -p "/dev/serial/by-id/usb-Espressif_ESP32-S2_0-if00" src/4_lesson
 
 upload:
-	arduino-cli upload --fqbn $(BOARD) -p "$(PORT)" src/3_lesson
+	arduino-cli upload --fqbn $(BOARD) -p "/dev/serial/by-id/usb-Espressif_ESP32-S2_0-if00" src/4_lesson
 
 monitor:
 	arduino-cli monitor -p "$(PORT)" -c baudrate=115200
