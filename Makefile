@@ -16,7 +16,7 @@ monitor:
 
 dependencies .dependencies:
 	arduino-cli core update-index --config-file arduino-cli.yaml
-	arduino-cli core install esp32:esp32 --config-file arduino-cli.yaml
+	arduino-cli core install esp32:esp32@3.2.1 --config-file arduino-cli.yaml
 	arduino-cli lib update-index
 	arduino-cli lib install "Joystick_ESP32S2"
 	touch .dependencies
