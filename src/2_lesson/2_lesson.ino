@@ -1,29 +1,20 @@
+#define MOTOR_PIN 1
 #define LED_PIN 15
-#define BUTTON_PIN 0
-#define X_PIN 4
-int x = 0;
-
 void setup() {
   pinMode(LED_PIN, OUTPUT);
-  pinMode(BUTTON_PIN, INPUT_PULLUP);
-  Serial.begin(115200);
-  pinMode(X_PIN, INPUT);
-  analogReadResolution(8);
+  pinMode(MOTOR_PIN, OUTPUT);
 }
 
 void loop() {
-  Serial.println("Привет, мир!");
-  digitalWrite(LED_PIN, HIGH);
-  delay(1000);
-  digitalWrite(LED_PIN, LOW);
-  delay(1000);
-  if (digitalRead(BUTTON_PIN)) {
-    Serial.println("Кнопка не нажата!");
-  } else {
-    Serial.println("Кнопка нажата.");
+  for(int i=0; i<=255; i++){
+    analogWrite(LED_PIN, i);
+    analogWrite(MOTOR_PIN, i);
+    delay(15);
   }
-  x = analogRead(X_PIN);  // читаем ось x
-  Serial.println(x);
-  analogWrite(LED_PIN, x);
+  for(int i=255; i>=0; i--){
+    analogWrite(LED_PIN, i);
+    analogWrite(MOTOR_PIN, i);
+    delay(15);
+  }
   delay(100);
 }
