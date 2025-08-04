@@ -7,7 +7,7 @@
 #define LED_BUILTIN 15
 
 // Настройки фильтрации (чем больше число - тем больше сглаживание)
-#define FILTER_STRENGTH 10 // от 1 до 10
+#define FILTER_STRENGTH 3 // от 1 до 10
 #define CENTER_VALUE 2590  // центр для 12-битного АЦП
 
 extern Joystick_ Joystick;
