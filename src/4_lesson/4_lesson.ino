@@ -112,37 +112,20 @@ void loop(){
     calibratedRY = calibrateAxis(filteredRY, cal_ry[0], cal_ry[1], cal_ry[2]);
     
     // Обработка тумблерной кнопки с подавлением дребезга
-    bool reading = !digitalRead(BUTTON_PIN);
+    currentButtonState = !digitalRead(BUTTON_PIN);
     
-    // Если состояние кнопки изменилось, сбрасываем таймер дребезга
-    if (reading != lastButtonState) {
-        lastDebounceTime = millis();
+     // Если состояние кнопки изменилось с отпущенного на нажатое
+    if (currentButtonState != lastButtonState && currentButtonState == true) {
+        toggleState = !toggleState; // Переключаем состояние тумблера
+        digitalWrite(LED_BUILTIN, toggleState); // Обновляем светодиод
     }
-    
-    // Если прошло достаточно времени после последнего изменения
-    if ((millis() - lastDebounceTime) > debounceDelay) {
-        // Если состояние кнопки действительно изменилось
-        if (reading != currentButtonState) {
-            currentButtonState = reading;
-            
-            // Если кнопка была нажата (переход от false к true)
-            if (currentButtonState) {
-                toggleState = !toggleState; // Переключаем состояние тумблера
-            }
-        }
-    }
-    
-    // Сохраняем текущее чтение для следующей итерации
-    lastButtonState = reading;
-    
-    // Управляем светодиодом в соответствии с состоянием тумблера
-    digitalWrite(LED_BUILTIN, toggleState ? HIGH : LOW);
 
-    uint32_t buttonState = toggleState ? 1 : 0;
-    
+    // Сохраняем текущее состояние для следующей итерации
+    lastButtonState = currentButtonState;
+
     // Отправляем состояние геймпада
     gamepad.send(0,0,calibratedX, calibratedY, calibratedRX, calibratedRY,
-             0, buttonState);
+             0, (uint32_t)toggleState);
 
     // Вывод в консоль для отладки
     if (millis() - lastPrint > 1000)
