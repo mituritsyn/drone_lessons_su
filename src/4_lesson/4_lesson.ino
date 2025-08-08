@@ -1,4 +1,6 @@
-#include <Joystick_ESP32S2.h>
+#include "USB.h"
+#include "USBHIDGamepad.h"
+
 #define PIN_GIMBAL_X 1
 #define PIN_GIMBAL_Y 2
 #define PIN_GIMBAL_RX 3
@@ -7,43 +9,52 @@
 #define LED_BUILTIN 15
 
 // Настройки фильтрации
-#define FILTER_STRENGTH 3
+#define FILTER_STRENGTH 0.3
 
-// Калибровочные значения для каждой оси (замерьте реальные значения)
-// Формат: {минимум, центр, максимум}
-int16_t cal_x[3] = {0, 2580, 4095};   // Примерные значения - замерьте свои!
-int16_t cal_y[3] = {0, 2550, 4095};
+// Калибровочные значения для каждой оси {минимум, центр, максимум}
+int16_t cal_x[3] = {0, 2580, 4095};   // Замерьте свои значения!
+int16_t cal_y[3] = {0, 2556, 4095};
 int16_t cal_rx[3] = {0, 2430, 4095};
-int16_t cal_ry[3] = {0, 2047, 4095};
+int16_t cal_ry[3] = {0, 2400, 4095};
 
-// Целевые значения для HID (обычно 0-4095 для 12-бит)
-#define HID_MIN 0
-#define HID_CENTER 2047
-#define HID_MAX 4095
+// Диапазон для HID геймпада
+#define HID_MIN -127
+#define HID_CENTER 0
+#define HID_MAX 127
+// #define HID_MIN 0
+// #define HID_CENTER 127  
+// #define HID_MAX 255
 
-extern Joystick_ Joystick;
-int16_t old_x = HID_CENTER, old_y = HID_CENTER, old_rx = HID_CENTER, old_ry = HID_CENTER;
-int16_t raw_x, raw_y, raw_rx, raw_ry;
-int16_t joy_x, joy_y, joy_rx, joy_ry;
+// Создаем объект геймпада
+USBHIDGamepad gamepad;
+
+// Переменные для фильтрации
+int16_t rawX, rawY, rawRX, rawRY;
+int16_t filteredX, filteredY, filteredRX, filteredRY;
+int8_t calibratedX ,calibratedY, calibratedRX, calibratedRY;
 long lastPrint = 0;
 
+// Переменные для тумблерной кнопки
+bool lastButtonState = false;      // Предыдущее физическое состояние кнопки
+bool currentButtonState = false;   // Текущее физическое состояние кнопки
+bool toggleState = false;          // Текущее состояние тумблера
+unsigned long lastDebounceTime = 0;// Время последнего изменения состояния
+const unsigned long debounceDelay = 50; // Задержка для подавления дребезга (мс)
+
 // Функция калибровки и масштабирования
-int16_t calibrateAxis(int16_t raw_value, int16_t cal_min, int16_t cal_center, int16_t cal_max)
-{
-    int16_t result;
+int8_t calibrateAxis(int16_t value, int16_t min, int16_t center, int16_t max){
+    // Предварительно ограничиваем входное значение
+    value = constrain(value, min, max);
     
-    if (raw_value < cal_center) {
-        // Левая/нижняя половина
-        result = map(raw_value, cal_min, cal_center, HID_MIN, HID_CENTER);
+    int16_t result;
+    if (value < center) {
+        result = map(value, min, center, HID_MIN, HID_CENTER);
     } else {
-        // Правая/верхняя половина  
-        result = map(raw_value, cal_center, cal_max, HID_CENTER, HID_MAX);
+        result = map(value, center, max, HID_CENTER, HID_MAX);
     }
     
-    // Ограничиваем значения в допустимом диапазоне
-    result = constrain(result, HID_MIN, HID_MAX);
-    
-    return result;
+    // Дополнительная защита на выходе
+    return (int8_t)constrain(result, HID_MIN, HID_MAX);
 }
 
 // Простая функция фильтрации
@@ -52,98 +63,103 @@ int16_t smoothValue(int16_t new_value, int16_t old_value)
     return (old_value * FILTER_STRENGTH + new_value) / (FILTER_STRENGTH + 1);
 }
 
-// Функция для автоматической калибровки (вызовите один раз)
-void printCalibrationValues()
-{
-    Serial.println("=== КАЛИБРОВКА ===");
-    Serial.println("Двигайте стики во все крайние положения и в центр");
-    Serial.println("Запишите минимальные, центральные и максимальные значения");
-    
-    for(int i = 0; i < 50; i++) {
-        Serial.printf("X:%4d Y:%4d RX:%4d RY:%4d\n", 
-            analogRead(PIN_GIMBAL_X), analogRead(PIN_GIMBAL_Y),
-            analogRead(PIN_GIMBAL_RX), analogRead(PIN_GIMBAL_RY));
-        delay(200);
-    }
-    Serial.println("=== КОНЕЦ КАЛИБРОВКИ ===");
-}
-
-void setup()
-{
+void setup(){
     Serial.begin(115200);
+    
+    // Настройка АЦП
     analogReadResolution(12);
+    
+    // Настройка пинов
+    pinMode(PIN_GIMBAL_X, INPUT);
     pinMode(PIN_GIMBAL_Y, INPUT);
     pinMode(PIN_GIMBAL_RX, INPUT);
     pinMode(PIN_GIMBAL_RY, INPUT);
     pinMode(BUTTON_PIN, INPUT_PULLUP);
     pinMode(LED_BUILTIN, OUTPUT);
-
-    digitalWrite(LED_BUILTIN, LOW);
-    joystickSetup();
     
-    // Раскомментируйте для калибровки:
-    // printCalibrationValues();
+    digitalWrite(LED_BUILTIN, LOW);
+    
+    // Инициализация переменных фильтрации
+    filteredX = analogRead(PIN_GIMBAL_X);
+    filteredY = analogRead(PIN_GIMBAL_Y);
+    filteredRX = analogRead(PIN_GIMBAL_RX);
+    filteredRY = analogRead(PIN_GIMBAL_RY);
+
+    // Инициализация USB HID
+    USB.begin();
+    gamepad.begin();
+    
+    Serial.println("USB HID Gamepad готов!");
 }
 
-void loop()
-{
+void loop(){
     // Читаем сырые значения
-    raw_x = analogRead(PIN_GIMBAL_X);
-    raw_y = analogRead(PIN_GIMBAL_Y);
-    raw_rx = analogRead(PIN_GIMBAL_RX);
-    raw_ry = analogRead(PIN_GIMBAL_RY);
+    rawX = analogRead(PIN_GIMBAL_X);
+    rawY = analogRead(PIN_GIMBAL_Y);
+    rawRX = analogRead(PIN_GIMBAL_RX);
+    rawRY = analogRead(PIN_GIMBAL_RY);
+    
+    // Применяем сглаживание к откалиброванным значениям
+    filteredX = (int16_t)(FILTER_STRENGTH * rawX + (1 - FILTER_STRENGTH) * filteredX);
+    filteredY = (int16_t)(FILTER_STRENGTH * rawY + (1 - FILTER_STRENGTH) * filteredY);
+    filteredRX = (int16_t)(FILTER_STRENGTH * rawRX + (1 - FILTER_STRENGTH) * filteredRX);
+    filteredRY = (int16_t)(FILTER_STRENGTH * rawRY + (1 - FILTER_STRENGTH) * filteredRY);
 
     // Калибруем каждую ось отдельно
-    int16_t cal_x_val = calibrateAxis(raw_x, cal_x[0], cal_x[1], cal_x[2]);
-    int16_t cal_y_val = calibrateAxis(raw_y, cal_y[0], cal_y[1], cal_y[2]);
-    int16_t cal_rx_val = calibrateAxis(raw_rx, cal_rx[0], cal_rx[1], cal_rx[2]);
-    int16_t cal_ry_val = calibrateAxis(raw_ry, cal_ry[0], cal_ry[1], cal_ry[2]);
+    calibratedX = calibrateAxis(filteredX, cal_x[0], cal_x[1], cal_x[2]);
+    calibratedY = calibrateAxis(filteredY, cal_y[0], cal_y[1], cal_y[2]);
+    calibratedRX = calibrateAxis(filteredRX, cal_rx[0], cal_rx[1], cal_rx[2]);
+    calibratedRY = calibrateAxis(filteredRY, cal_ry[0], cal_ry[1], cal_ry[2]);
+    
+    // Обработка тумблерной кнопки с подавлением дребезга
+    bool reading = !digitalRead(BUTTON_PIN);
+    
+    // Если состояние кнопки изменилось, сбрасываем таймер дребезга
+    if (reading != lastButtonState) {
+        lastDebounceTime = millis();
+    }
+    
+    // Если прошло достаточно времени после последнего изменения
+    if ((millis() - lastDebounceTime) > debounceDelay) {
+        // Если состояние кнопки действительно изменилось
+        if (reading != currentButtonState) {
+            currentButtonState = reading;
+            
+            // Если кнопка была нажата (переход от false к true)
+            if (currentButtonState) {
+                toggleState = !toggleState; // Переключаем состояние тумблера
+            }
+        }
+    }
+    
+    // Сохраняем текущее чтение для следующей итерации
+    lastButtonState = reading;
+    
+    // Управляем светодиодом в соответствии с состоянием тумблера
+    digitalWrite(LED_BUILTIN, toggleState ? HIGH : LOW);
 
-    // Применяем сглаживание к откалиброванным значениям
-    joy_x = smoothValue(cal_x_val, old_x);
-    joy_y = smoothValue(cal_y_val, old_y);
-    joy_rx = smoothValue(cal_rx_val, old_rx);
-    joy_ry = smoothValue(cal_ry_val, old_ry);
+    uint32_t buttonState = toggleState ? 1 : 0;
+    
+    // Отправляем состояние геймпада
+    gamepad.send(0,0,calibratedX, calibratedY, calibratedRX, calibratedRY,
+             0, buttonState);
 
-    // Сохраняем значения для следующего раза
-    old_x = joy_x;
-    old_y = joy_y;
-    old_rx = joy_rx;
-    old_ry = joy_ry;
-
-    // Вывод в консоль
+    // Вывод в консоль для отладки
     if (millis() - lastPrint > 1000)
     {
         lastPrint = millis();
-        Serial.printf("Сырые:    X:%4d Y:%4d RX:%4d RY:%4d\n", raw_x, raw_y, raw_rx, raw_ry);
-        Serial.printf("Калибр:   X:%4d Y:%4d RX:%4d RY:%4d\n", cal_x_val, cal_y_val, cal_rx_val, cal_ry_val);
-        Serial.printf("Финал:    X:%4d Y:%4d RX:%4d RY:%4d\n", joy_x, joy_y, joy_rx, joy_ry);
-        Serial.printf("Вольтаж:  X:%4d Y:%4d RX:%4d RY:%4d\n",
+        Serial.printf("Сырые:    X:%4d Y:%4d RX:%4d RY:%4d\n", rawX, rawY, rawRX, rawRY);
+        Serial.printf("Фильтр:    X:%5d Y:%5d RX:%5d RY:%5d\n", filteredX, filteredY, filteredRX, filteredRY);
+        Serial.printf("Калибр:   X:%5d Y:%5d RX:%5d RY:%5d\n", calibratedX, calibratedY, calibratedRX, calibratedRY);
+
+        Serial.printf("Вольтаж:  X:%4d Y:%4d RX:%4d RY:%4d mV\n",
                         analogReadMilliVolts(PIN_GIMBAL_X), 
                         analogReadMilliVolts(PIN_GIMBAL_Y),
                         analogReadMilliVolts(PIN_GIMBAL_RX),
                         analogReadMilliVolts(PIN_GIMBAL_RY));
+        Serial.printf("Тумблер: %s\n", toggleState ? "ВКЛ" : "ВЫКЛ");
         Serial.println("---");
     }
 
-    // Отправляем откалиброванные значения
-    Joystick.setXAxis(joy_x);
-    Joystick.setYAxis(joy_y);
-    Joystick.setThrottle(joy_rx);
-    Joystick.setRudder(joy_ry);
-
-    // Обработка кнопки
-    if (!digitalRead(BUTTON_PIN))
-    {
-        Joystick.pressButton(0);
-        digitalWrite(LED_BUILTIN, HIGH);
-    }
-    else
-    {
-        // Joystick.releaseButton(0);
-        digitalWrite(LED_BUILTIN, LOW);
-    }
-
-    Joystick.sendState();
-    delay(5);
+    delay(1);
 }
