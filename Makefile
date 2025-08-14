@@ -1,15 +1,16 @@
 BOARD = esp32:esp32:esp32s2:CDCOnBoot=cdc
 PORT := $(wildcard /dev/serial/by-id/usb-Espressif_ESP32-S2_0* /dev/serial/by-id/usb-Espressif_Systems_ESP32S2_DEV_0*)
 PORT := $(strip $(PORT))
+PROJ := drone
 
 build: .dependencies
-	arduino-cli compile --fqbn $(BOARD) src/4_lesson
+	arduino-cli compile --fqbn $(BOARD) src/$(PROJ)
 
 clean_upload: build
-	arduino-cli upload --fqbn $(BOARD) -p "/dev/serial/by-id/usb-Espressif_ESP32-S2_0-if00" src/4_lesson
+	arduino-cli upload --fqbn $(BOARD) -p "/dev/serial/by-id/usb-Espressif_ESP32-S2_0-if00" src/$(PROJ)
 
 upload:
-	arduino-cli upload --fqbn $(BOARD) -p "/dev/serial/by-id/usb-Espressif_ESP32-S2_0-if00" src/4_lesson
+	arduino-cli upload --fqbn $(BOARD) -p "/dev/serial/by-id/usb-Espressif_ESP32-S2_0-if00" src/$(PROJ)
 
 monitor:
 	arduino-cli monitor -p "$(PORT)" -c baudrate=115200
