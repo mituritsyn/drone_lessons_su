@@ -14,3 +14,8 @@ arduino-cli core install esp32:esp32
 ```
 arduino-cli config set network.connection_timeout 600s
 ```
+
+### информация о плате по fqbn
+```
+arduino-cli board details --fqbn esp32:esp32:esp32s3
+```
