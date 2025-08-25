@@ -42,7 +42,7 @@ void loop() {
     Serial.print("Счётчик: ");
     Serial.println(receivedMessage.counter);
     Serial.print("Значение датчика: ");
-    Serial.println(receivedMessage.sensor_value, 1);
+    Serial.println(receivedMessage.sensor_value);
     Serial.println("=====================================");
     Serial.println();
   }
