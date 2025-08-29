@@ -32,7 +32,6 @@ void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
 
 void setup() {
   Serial.begin(115200);
-  delay(1000); // Даем время для инициализации Serial
   
   // Инициализация WiFi в режиме Station
   WiFi.mode(WIFI_STA);
@@ -42,12 +41,8 @@ void setup() {
   Serial.print("MAC-адрес отправителя: ");
   Serial.println(WiFi.macAddress());
   
-  // Инициализация ESP-NOW
-  if (esp_now_init() != ESP_OK) {
-    Serial.println("Ошибка инициализации ESP-NOW");
-    return;
-  }
-  
+esp_now_init() != ESP_OK) {
+
   // Регистрация функции обратного вызова для отправки
   esp_now_register_send_cb(OnDataSent);
   
@@ -59,12 +54,8 @@ void setup() {
   
   // Добавление broadcast адреса для отправки всем
   memcpy(peerInfo.peer_addr, broadcastAddress, 6);
-  if (esp_now_add_peer(&peerInfo) != ESP_OK) {
-    Serial.println("Не удалось добавить broadcast адрес");
-  } else {
-    Serial.println("Broadcast адрес добавлен успешно");
-  }
-  
+  esp_now_add_peer(&peerInfo);
+
   Serial.println("Broadcast отправитель инициализирован");
   Serial.print("Размер структуры сообщения: ");
   Serial.print(sizeof(myMessage));
