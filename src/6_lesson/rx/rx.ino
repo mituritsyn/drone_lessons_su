@@ -20,15 +20,20 @@ void onDataRecv(const esp_now_recv_info *recv_info, const uint8_t *incomingData,
 
 void setup() {
   Serial.begin(115200);
-  
+  while (!Serial) {
+    ; // ждём подключения монитора
+  }
+
   // Инициализация WiFi в режиме Station
   WiFi.mode(WIFI_STA);
-  
+  Serial.println(WiFi.macAddress());
+
   // Инициализация ESP-NOW
   esp_now_init();
   
   // Регистрация функции обратного вызова для получения
   esp_now_register_recv_cb(onDataRecv);
+  
 }
 
 void loop() {
