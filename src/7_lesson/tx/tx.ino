@@ -3,7 +3,12 @@
 
 // Broadcast MAC-адрес для отправки всем устройствам
 uint8_t broadcastAddress[] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+#define HID_MIN -127
+#define HID_CENTER 0
+#define HID_MAX 127
 
+
+int8_t calibratedX ,calibratedY, calibratedRX, calibratedRY;
 // Структура для передаваемых данных
 typedef struct{
   char message[100];
@@ -15,6 +20,7 @@ message_struct myMessage{"Hello there", 0, 0.0};
 
 void setup(){
   Serial.begin(115200);
+  armState();
 
   // Инициализация WiFi в режиме Station
   WiFi.mode(WIFI_STA);
