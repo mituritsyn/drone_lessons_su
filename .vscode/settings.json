@@ -43,4 +43,10 @@
 		"random": "c",
 		"limits": "c"
 	},
+	"terminal.integrated.env.linux": {
+        "CMAKE_BUILD_PARALLEL_LEVEL": "6"
+	},
+	"terminal.integrated.env.windows": {
+        "CMAKE_BUILD_PARALLEL_LEVEL": "4"
+	},
 }
